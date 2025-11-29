@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import PlainTextResponse
 
 app = FastAPI()
 
+# Allow ESP32 requests from anywhere
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -10,24 +12,29 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Global LED state
 led_state = "OFF"
 
-@app.get("/")
+# Root endpoint (optional)
+@app.get("/", response_class=PlainTextResponse)
 def home():
-    return {"status": "server running", "led": led_state}
+    return f"Server running. LED state: {led_state}"
 
-@app.get("/led")
-def get_led():
+# Get current LED state
+@app.get("/led", response_class=PlainTextResponse)
+def get_led_state():
     return led_state
 
-@app.get("/led/on")
-def led_on():
+# Turn LED ON
+@app.get("/led/on", response_class=PlainTextResponse)
+def set_led_on():
     global led_state
     led_state = "ON"
-    return "ON"
+    return led_state
 
-@app.get("/led/off")
-def led_off():
+# Turn LED OFF
+@app.get("/led/off", response_class=PlainTextResponse)
+def set_led_off():
     global led_state
     led_state = "OFF"
-    return "OFF"
+    return led_state
