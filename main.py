@@ -1,40 +1,30 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import PlainTextResponse
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
-# Allow ESP32 requests from anywhere
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Serve the static folder
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Global LED state
-led_state = "OFF"
-
-# Root endpoint (optional)
-@app.get("/", response_class=PlainTextResponse)
+# Homepage (Dashboard)
+@app.get("/")
 def home():
-    return f"Server running. LED state: {led_state}"
+    return FileResponse("static/index.html")
 
-# Get current LED state
-@app.get("/led", response_class=PlainTextResponse)
-def get_led_state():
+# LED state (stored on server)
+led_state = {"status": "off"}
+
+@app.get("/led")
+def led_status():
     return led_state
 
-# Turn LED ON
-@app.get("/led/on", response_class=PlainTextResponse)
-def set_led_on():
-    global led_state
-    led_state = "ON"
-    return led_state
+@app.get("/led/on")
+def led_on():
+    led_state["status"] = "on"
+    return {"message": "LED turned ON"}
 
-# Turn LED OFF
-@app.get("/led/off", response_class=PlainTextResponse)
-def set_led_off():
-    global led_state
-    led_state = "OFF"
-    return led_state
+@app.get("/led/off")
+def led_off():
+    led_state["status"] = "off"
+    return {"message": "LED turned OFF"}

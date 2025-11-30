@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32 LED Control Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #121212;
+            color: white;
+            text-align: center;
+            padding-top: 50px;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        #status {
+            font-size: 24px;
+            margin: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: inline-block;
+            background: #1f1f1f;
+        }
+
+        button {
+            padding: 15px 35px;
+            font-size: 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            color: white;
+            background: #0066ff;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #0052cc;
+        }
+
+        .on {
+            color: #00ff88;
+        }
+
+        .off {
+            color: #ff5555;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>ESP32 LED Control</h1>
+
+    <div id="status">Loading...</div><br>
+
+    <button onclick="toggleLED()">Toggle LED</button>
+
+    <script>
+        const API_BASE = "https://esp32-led-server-production.up.railway.app";
+
+        async function loadState() {
+            try {
+                const response = await fetch(`${API_BASE}/state`);
+                const data = await response.json();
+                updateUI(data.state);
+            } catch (e) {
+                document.getElementById("status").innerHTML = "Error connecting...";
+            }
+        }
+
+        async function toggleLED() {
+            try {
+                const response = await fetch(`${API_BASE}/toggle`, { method: "POST" });
+                const data = await response.json();
+                updateUI(data.state);
+            } catch (e) {
+                alert("Failed to toggle LED");
+            }
+        }
+
+        function updateUI(state) {
+            const statusDiv = document.getElementById("status");
+
+            if (state === "ON") {
+                statusDiv.innerHTML = "LED is ON";
+                statusDiv.className = "on";
+            } else {
+                statusDiv.innerHTML = "LED is OFF";
+                statusDiv.className = "off";
+            }
+        }
+
+        // Auto-load LED state when the page opens
+        loadState();
+
+        // Refresh status every 3 seconds (optional)
+        setInterval(loadState, 3000);
+    </script>
+
+</body>
+</html>
