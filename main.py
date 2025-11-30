@@ -7,7 +7,7 @@ app = FastAPI()
 # Serve the static folder for the dashboard
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Homepage (Dashboard)
+# Homepage (dashboard)
 @app.get("/")
 def home():
     return FileResponse("static/index.html")
@@ -15,7 +15,7 @@ def home():
 # LED state stored on the server
 led_state = {"status": "off"}
 
-# Existing endpoints for ESP32
+# ESP32 endpoints
 @app.get("/led")
 def led_status():
     return led_state
@@ -30,13 +30,12 @@ def led_off():
     led_state["status"] = "off"
     return {"message": "LED turned OFF"}
 
-# New endpoints for the dashboard
+# Dashboard endpoints
 @app.get("/state")
 def state():
     return led_state
 
 @app.post("/toggle")
 def toggle():
-    # Switch LED state
     led_state["status"] = "on" if led_state["status"] == "off" else "off"
     return led_state

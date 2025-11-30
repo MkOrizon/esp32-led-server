@@ -1,21 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ESP32 LED Control</title>
+<style>
+  body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #111; color: #fff; }
+  h1 { color: #00ff88; }
+  #status { font-size: 2em; margin: 20px; }
+  button { padding: 15px 30px; font-size: 1.5em; cursor: pointer; border: none; border-radius: 10px; }
+  #toggleBtn { background: #ff5555; color: #fff; }
+  #toggleBtn.on { background: #00ff88; color: #000; }
+</style>
+</head>
+<body>
+<h1>ESP32 LED Control</h1>
+<div id="status">Loading...</div>
+<button id="toggleBtn" onclick="toggleLED()">Toggle LED</button>
+
 <script>
 const API_BASE = "https://esp32-led-server-production.up.railway.app";
 
-// Load current LED state and update UI
 async function loadState() {
     try {
         const response = await fetch(`${API_BASE}/state`);
         const data = await response.json();
-        updateUI(data.status); // make sure it matches 'on'/'off'
+        updateUI(data.status);
     } catch (e) {
-        document.getElementById("status").innerHTML = "Error connecting...";
+        document.getElementById("status").innerText = "Error connecting...";
     }
 }
 
-// Toggle LED on the server
 async function toggleLED() {
     try {
-        const response = await fetch(`${API_BASE}/toggle`, { method: "POST" }); // must be POST
+        const response = await fetch(`${API_BASE}/toggle`, { method: "POST" });
         const data = await response.json();
         updateUI(data.status);
     } catch (e) {
@@ -23,21 +41,21 @@ async function toggleLED() {
     }
 }
 
-// Update the UI
 function updateUI(state) {
     const statusDiv = document.getElementById("status");
+    const toggleBtn = document.getElementById("toggleBtn");
     if (state.toLowerCase() === "on") {
-        statusDiv.innerHTML = "LED is ON";
-        statusDiv.style.color = "#00ff88"; // green
+        statusDiv.innerText = "LED is ON";
+        toggleBtn.classList.add("on");
     } else {
-        statusDiv.innerHTML = "LED is OFF";
-        statusDiv.style.color = "#ff5555"; // red
+        statusDiv.innerText = "LED is OFF";
+        toggleBtn.classList.remove("on");
     }
 }
 
-// Initial load
+// Initial load and refresh every 3 seconds
 loadState();
-
-// Optional: refresh state every 3 seconds
 setInterval(loadState, 3000);
 </script>
+</body>
+</html>
