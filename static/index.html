@@ -7,48 +7,53 @@
 
     <style>
         body {
-            background: #0d1117;
-            color: #c9d1d9;
-            font-family: Arial, sans-serif;
+            background: #e0e5ec;
+            font-family: "Segoe UI", sans-serif;
             text-align: center;
-            padding-top: 50px;
+            padding-top: 70px;
+            color: #444;
         }
 
         h1 {
             font-size: 32px;
-            color: #58a6ff;
-            margin-bottom: 10px;
+            color: #333;
         }
 
         h2 {
-            font-size: 20px;
-            color: #8b949e;
-            margin-bottom: 40px;
+            margin-top: -10px;
+            color: #666;
+            font-weight: 400;
         }
 
-        /* Glow Button Style A */
+        /* Neumorphic Button */
         .button {
-            background: #238636;
+            background: #e0e5ec;
             border: none;
-            padding: 20px 35px;
-            font-size: 22px;
-            color: white;
+            padding: 25px 45px;
+            font-size: 24px;
             border-radius: 50px;
             cursor: pointer;
-            transition: 0.3s;
-            width: 250px;
-            box-shadow: 0 0 12px rgba(35,134,54,0.5);
+            width: 260px;
+
+            box-shadow: 
+                8px 8px 16px #b8bec7,
+                -8px -8px 16px #ffffff;
+
+            transition: 0.2s;
         }
 
-        .button:hover {
-            box-shadow: 0 0 20px rgba(35,134,54,1);
-            transform: scale(1.05);
+        .button:active {
+            box-shadow: 
+                inset 8px 8px 16px #b8bec7,
+                inset -8px -8px 16px #ffffff;
+            transform: scale(0.98);
         }
 
         .status {
-            margin-top: 30px;
-            font-size: 22px;
-            color: #f0f6fc;
+            margin-top: 35px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #555;
         }
 
     </style>
@@ -74,28 +79,25 @@
 
             if (status === "on") {
                 btn.innerHTML = "Turn OFF";
-                btn.style.background = "#da3633";
-                btn.style.boxShadow = "0 0 20px rgba(218,54,51,0.8)";
-                stateText.innerHTML = "LED Status: <strong style='color:#da3633'>ON</strong>";
+                btn.style.color = "#d00000";
+                stateText.innerHTML = "LED Status: <span style='color:#d00000'>ON</span>";
             } else {
                 btn.innerHTML = "Turn ON";
-                btn.style.background = "#238636";
-                btn.style.boxShadow = "0 0 20px rgba(35,134,54,0.8)";
-                stateText.innerHTML = "LED Status: <strong style='color:#238636'>OFF</strong>";
+                btn.style.color = "#007f0e";
+                stateText.innerHTML = "LED Status: <span style='color:#007f0e'>OFF</span>";
             }
         }
 
         window.onload = loadState;
     </script>
 </head>
-<body>
 
+<body>
     <h1>M.K IOT HUB</h1>
-    <h2>Cloud LED Controller</h2>
+    <h2>Neumorphic LED Cloud Controller</h2>
 
     <button id="ledBtn" class="button" onclick="toggleLED()">Loading...</button>
 
     <div class="status" id="stateText">Checking LED state...</div>
-
 </body>
 </html>
