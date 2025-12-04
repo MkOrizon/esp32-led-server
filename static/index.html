@@ -1,61 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ESP32 LED Control</title>
-<style>
-  body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #111; color: #fff; }
-  h1 { color: #00ff88; }
-  #status { font-size: 2em; margin: 20px; }
-  button { padding: 15px 30px; font-size: 1.5em; cursor: pointer; border: none; border-radius: 10px; }
-  #toggleBtn { background: #ff5555; color: #fff; }
-  #toggleBtn.on { background: #00ff88; color: #000; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M.K IOT HUB - LED Control</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #0d1117;
+            color: #e6edf3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .header {
+            width: 100%;
+            padding: 20px;
+            background: #161b22;
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: #58a6ff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+        }
+
+        .container {
+            margin-top: 80px;
+            background: #161b22;
+            padding: 30px;
+            border-radius: 12px;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(88,166,255,0.2);
+        }
+
+        .status-text {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .button {
+            background: #238636;
+            border: none;
+            padding: 15px 25px;
+            font-size: 18px;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 100%;
+        }
+
+        .button:hover {
+            background: #2ea043;
+        }
+
+        .button-off {
+            background: #d63a3a;
+        }
+
+        .button-off:hover {
+            background: #e55353;
+        }
+    </style>
 </head>
 <body>
-<h1>ESP32 LED Control</h1>
-<div id="status">Loading...</div>
-<button id="toggleBtn" onclick="toggleLED()">Toggle LED</button>
 
-<script>
-const API_BASE = "https://esp32-led-server-production.up.railway.app";
+    <div class="header">M.K IOT HUB</div>
 
-async function loadState() {
-    try {
-        const response = await fetch(`${API_BASE}/state`);
-        const data = await response.json();
-        updateUI(data.status);
-    } catch (e) {
-        document.getElementById("status").innerText = "Error connecting...";
-    }
-}
+    <div class="container">
+        <div class="status-text" id="statusText">Loading...</div>
+        <button id="toggleBtn" class="button">Toggle LED</button>
+    </div>
 
-async function toggleLED() {
-    try {
-        const response = await fetch(`${API_BASE}/toggle`, { method: "POST" });
-        const data = await response.json();
-        updateUI(data.status);
-    } catch (e) {
-        alert("Failed to toggle LED");
-    }
-}
+    <script>
+        async function fetchState() {
+            const response = await fetch("/state");
+            const data = await response.json();
 
-function updateUI(state) {
-    const statusDiv = document.getElementById("status");
-    const toggleBtn = document.getElementById("toggleBtn");
-    if (state.toLowerCase() === "on") {
-        statusDiv.innerText = "LED is ON";
-        toggleBtn.classList.add("on");
-    } else {
-        statusDiv.innerText = "LED is OFF";
-        toggleBtn.classList.remove("on");
-    }
-}
+            const statusText = document.getElementById("statusText");
+            const toggleBtn = document.getElementById("toggleBtn");
 
-// Initial load and refresh every 3 seconds
-loadState();
-setInterval(loadState, 2000);
-</script>
+            if (data.status === "on") {
+                statusText.textContent = "LED Status: ON";
+                toggleBtn.classList.remove("button-off");
+                toggleBtn.classList.add("button");
+            } else {
+                statusText.textContent = "LED Status: OFF";
+                toggleBtn.classList.remove("button");
+                toggleBtn.classList.add("button-off");
+            }
+        }
+
+        async function toggleLED() {
+            const response = await fetch("/toggle", { method: "POST" });
+            const data = await response.json();
+            fetchState();
+        }
+
+        document.getElementById("toggleBtn").addEventListener("click", toggleLED);
+
+        setInterval(fetchState, 1000);
+        fetchState();
+    </script>
+
 </body>
 </html>
