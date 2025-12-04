@@ -7,50 +7,74 @@
 
     <style>
         body {
-            background: #0d1117;
-            color: #c9d1d9;
-            font-family: Arial, sans-serif;
+            background: #0f141a;
+            font-family: "Segoe UI", sans-serif;
             text-align: center;
-            padding-top: 50px;
+            padding-top: 60px;
+            color: #d9e2ec;
         }
 
         h1 {
-            font-size: 32px;
-            color: #58a6ff;
-            margin-bottom: 10px;
+            font-size: 34px;
+            margin-bottom: 5px;
         }
 
         h2 {
-            font-size: 20px;
-            color: #8b949e;
-            margin-bottom: 40px;
+            margin-top: 0;
+            font-size: 18px;
+            color: #9aa5b1;
         }
 
-        /* Glow Button Style A */
-        .button {
-            background: #238636;
+        /* Modern Power Button */
+        .power-btn {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
             border: none;
-            padding: 20px 35px;
-            font-size: 22px;
-            color: white;
-            border-radius: 50px;
+            background: #1c232b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            transition: 0.3s;
-            width: 250px;
-            box-shadow: 0 0 12px rgba(35,134,54,0.5);
+
+            box-shadow: 
+                0 0 20px rgba(255,0,0,0),
+                inset 0 0 10px #000;
+
+            transition: 0.25s ease-in-out;
         }
 
-        .button:hover {
-            box-shadow: 0 0 20px rgba(35,134,54,1);
-            transform: scale(1.05);
+        /* Power icon */
+        .power-btn svg {
+            width: 90px;
+            height: 90px;
+            stroke-width: 8px;
+            stroke-linecap: round;
+            transition: 0.25s;
+        }
+
+        /* LED OFF look */
+        .off svg {
+            stroke: #6b7c93;
+        }
+
+        /* LED ON look */
+        .on {
+            box-shadow: 
+                0 0 25px rgba(0,255,85,0.7),
+                0 0 60px rgba(0,255,85,0.5),
+                inset 0 0 20px rgba(0,255,85,0.4);
+        }
+
+        .on svg {
+            stroke: #00ff55;
         }
 
         .status {
             margin-top: 30px;
             font-size: 22px;
-            color: #f0f6fc;
+            font-weight: bold;
         }
-
     </style>
 
     <script>
@@ -61,41 +85,42 @@
         }
 
         async function toggleLED() {
-            const res = await fetch("/toggle", {
-                method: "POST"
-            });
+            const res = await fetch("/toggle", { method: "POST" });
             const data = await res.json();
             updateUI(data.status);
         }
 
         function updateUI(status) {
-            const btn = document.getElementById("ledBtn");
+            const btn = document.getElementById("powerBtn");
             const stateText = document.getElementById("stateText");
 
             if (status === "on") {
-                btn.innerHTML = "Turn OFF";
-                btn.style.background = "#da3633";
-                btn.style.boxShadow = "0 0 20px rgba(218,54,51,0.8)";
-                stateText.innerHTML = "LED Status: <strong style='color:#da3633'>ON</strong>";
+                btn.classList.remove("off");
+                btn.classList.add("on");
+                stateText.innerHTML = "LED Status: <span style='color:#00ff55;'>ON</span>";
             } else {
-                btn.innerHTML = "Turn ON";
-                btn.style.background = "#238636";
-                btn.style.boxShadow = "0 0 20px rgba(35,134,54,0.8)";
-                stateText.innerHTML = "LED Status: <strong style='color:#238636'>OFF</strong>";
+                btn.classList.remove("on");
+                btn.classList.add("off");
+                stateText.innerHTML = "LED Status: <span style='color:#ff3b3b;'>OFF</span>";
             }
         }
 
         window.onload = loadState;
     </script>
 </head>
-<body>
 
+<body>
     <h1>M.K IOT HUB</h1>
     <h2>Cloud LED Controller</h2>
 
-    <button id="ledBtn" class="button" onclick="toggleLED()">Loading...</button>
+    <button id="powerBtn" class="power-btn off" onclick="toggleLED()">
+        <!-- Power Icon -->
+        <svg viewBox="0 0 24 24">
+            <path d="M12 2 L12 12" />  <!-- vertical line -->
+            <path d="M7 7 A5 5 0 1 0 17 7" /> <!-- arc -->
+        </svg>
+    </button>
 
     <div class="status" id="stateText">Checking LED state...</div>
-
 </body>
 </html>
