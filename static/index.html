@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>M.K IOT HUB - Control Panel</title>
-
     <style>
         body {
             margin: 0;
-            padding: 0;
             font-family: Arial, sans-serif;
             background: linear-gradient(135deg, #0a0f24, #1a2b4c, #0a0f24);
             color: white;
@@ -19,9 +17,8 @@
             padding: 20px;
             font-size: 32px;
             font-weight: bold;
-            letter-spacing: 2px;
-            background-color: rgba(255, 255, 255, 0.08);
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            background-color: rgba(255,255,255,0.08);
+            border-bottom: 2px solid rgba(255,255,255,0.1);
         }
 
         .container {
@@ -36,7 +33,7 @@
         }
 
         .control-card {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255,255,255,0.1);
             padding: 30px;
             border-radius: 14px;
             box-shadow: 0 0 10px rgba(0,0,0,0.4);
@@ -46,6 +43,49 @@
         .control-card h2 {
             font-size: 22px;
             margin-bottom: 15px;
+        }
+
+        /* Toggle switch styling */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0;
+            right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px; width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
         }
 
         button {
@@ -70,76 +110,79 @@
         button:active {
             transform: scale(0.95);
         }
+
     </style>
 </head>
 <body>
 
-    <header>
-        M.K IOT HUB
-    </header>
+<header>M.K IOT HUB</header>
 
-    <div class="container">
+<div class="container">
 
-        <!-- LED 1 -->
-        <div class="control-card">
-            <h2>LED 1</h2>
-            <button onclick="toggleLED('led1')">Toggle LED 1</button>
-        </div>
-
-        <!-- LED 2 -->
-        <div class="control-card">
-            <h2>LED 2</h2>
-            <button onclick="toggleLED('led2')">Toggle LED 2</button>
-        </div>
-
-        <!-- LED 3 -->
-        <div class="control-card">
-            <h2>LED 3</h2>
-            <button onclick="toggleLED('led3')">Toggle LED 3</button>
-        </div>
-
-        <!-- LED 4 -->
-        <div class="control-card">
-            <h2>LED 4</h2>
-            <button onclick="toggleLED('led4')">Toggle LED 4</button>
-        </div>
-
-        <!-- SERVO CONTROL -->
-        <div class="control-card">
-            <h2>Servo Control</h2>
-            <button onclick="moveServo('left')">Move Left (0°)</button>
-            <button onclick="moveServo('center')">Center (90°)</button>
-            <button onclick="moveServo('right')">Move Right (180°)</button>
-        </div>
-
+    <!-- LEDs -->
+    <div class="control-card">
+        <h2>LED 1</h2>
+        <label class="switch">
+            <input type="checkbox" id="led1" onchange="toggleLEDSwitch('led1')">
+            <span class="slider round"></span>
+        </label>
+    </div>
+    <div class="control-card">
+        <h2>LED 2</h2>
+        <label class="switch">
+            <input type="checkbox" id="led2" onchange="toggleLEDSwitch('led2')">
+            <span class="slider round"></span>
+        </label>
+    </div>
+    <div class="control-card">
+        <h2>LED 3</h2>
+        <label class="switch">
+            <input type="checkbox" id="led3" onchange="toggleLEDSwitch('led3')">
+            <span class="slider round"></span>
+        </label>
+    </div>
+    <div class="control-card">
+        <h2>LED 4</h2>
+        <label class="switch">
+            <input type="checkbox" id="led4" onchange="toggleLEDSwitch('led4')">
+            <span class="slider round"></span>
+        </label>
     </div>
 
-    <script>
-        async function toggleLED(ledID) {
-            try {
-                const response = await fetch(`/led/${ledID}`);
-                const data = await response.json();
-                const newState = data.state === "on" ? "off" : "on";
+    <!-- Servo -->
+    <div class="control-card">
+        <h2>Servo Control</h2>
+        <button onclick="moveServo('left')">Move Left (0°)</button>
+        <button onclick="moveServo('center')">Center (90°)</button>
+        <button onclick="moveServo('right')">Move Right (180°)</button>
+    </div>
 
-                await fetch(`/led/${ledID}/${newState}`);
-                alert(`✔ ${ledID.toUpperCase()} is now ${newState.toUpperCase()}`);
-            }
-            catch (err) {
-                alert("Connection error — server unreachable.");
-            }
-        }
+</div>
 
-        async function moveServo(position) {
-            try {
-                const response = await fetch(`/servo/${position}`);
-                const data = await response.json();
-                alert(`✔ Servo moved to: ${data.position.toUpperCase()}`);
-            }
-            catch (err) {
-                alert("Connection error — server unreachable.");
-            }
-        }
-    </script>
+<script>
+async function toggleLEDSwitch(ledID) {
+    try {
+        const checkbox = document.getElementById(ledID);
+        const newState = checkbox.checked ? "on" : "off";
+
+        await fetch(`/led/${ledID}/${newState}`);
+        console.log(`${ledID} is now ${newState}`);
+    } catch (err) {
+        alert("Connection error — server unreachable.");
+        checkbox.checked = !checkbox.checked; // revert on error
+    }
+}
+
+async function moveServo(position) {
+    try {
+        const response = await fetch(`/servo/${position}`);
+        const data = await response.json();
+        alert(`✔ Servo moved to: ${data.position.toUpperCase()}`);
+    } catch (err) {
+        alert("Connection error — server unreachable.");
+    }
+}
+</script>
 
 </body>
 </html>
