@@ -12,30 +12,45 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 def home():
     return FileResponse("static/index.html")
 
-# LED state stored on the server
-led_state = {"status": "off"}
+# -------------------------------------------------------
+# LED STATES (4 LEDs)
+# -------------------------------------------------------
+leds = {
+    "led1": "off",
+    "led2": "off",
+    "led3": "off",
+    "led4": "off"
+}
 
-# ESP32 endpoints
-@app.get("/led")
-def led_status():
-    return led_state
+# GET LED state
+@app.get("/led/{led_id}")
+def get_led_state(led_id: str):
+    if led_id not in leds:
+        return {"error": "LED not found"}
+    return {"id": led_id, "state": leds[led_id]}
 
-@app.get("/led/on")
-def led_on():
-    led_state["status"] = "on"
-    return {"message": "LED turned ON"}
+# SET LED state
+@app.get("/led/{led_id}/{state}")
+def set_led_state(led_id: str, state: str):
+    if led_id not in leds:
+        return {"error": "LED not found"}
 
-@app.get("/led/off")
-def led_off():
-    led_state["status"] = "off"
-    return {"message": "LED turned OFF"}
+    if state not in ["on", "off"]:
+        return {"error": "Invalid state"}
 
-# Dashboard endpoints
-@app.get("/state")
-def state():
-    return led_state
+    leds[led_id] = state
+    return {"id": led_id, "state": state}
 
-@app.post("/toggle")
-def toggle():
-    led_state["status"] = "on" if led_state["status"] == "off" else "off"
-    return led_state
+# -------------------------------------------------------
+# SERVO CONTROL (left / center / right)
+# -------------------------------------------------------
+servo_position = {"position": "center"}  # default position
+
+@app.get("/servo/{pos}")
+def move_servo(pos: str):
+    if pos not in ["left", "center", "right"]:
+        return {"error": "Invalid servo position"}
+
+    servo_position["position"] = pos
+    return servo_position
+

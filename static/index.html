@@ -3,124 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M.K IOT HUB - LED Control</title>
+    <title>M.K IOT HUB - Control Panel</title>
 
     <style>
         body {
-            background: #0f141a;
-            font-family: "Segoe UI", sans-serif;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #0a0f24, #1a2b4c, #0a0f24);
+            color: white;
             text-align: center;
-            padding-top: 60px;
-            color: #d9e2ec;
         }
 
-        h1 {
-            font-size: 34px;
-            margin-bottom: 5px;
-        }
-
-        h2 {
-            margin-top: 0;
-            font-size: 18px;
-            color: #9aa5b1;
-        }
-
-        /* Modern Power Button */
-        .power-btn {
-            width: 160px;
-            height: 160px;
-            border-radius: 50%;
-            border: none;
-            background: #1c232b;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-
-            box-shadow: 
-                0 0 20px rgba(255,0,0,0),
-                inset 0 0 10px #000;
-
-            transition: 0.25s ease-in-out;
-        }
-
-        /* Power icon */
-        .power-btn svg {
-            width: 90px;
-            height: 90px;
-            stroke-width: 8px;
-            stroke-linecap: round;
-            transition: 0.25s;
-        }
-
-        /* LED OFF look */
-        .off svg {
-            stroke: #6b7c93;
-        }
-
-        /* LED ON look */
-        .on {
-            box-shadow: 
-                0 0 25px rgba(0,255,85,0.7),
-                0 0 60px rgba(0,255,85,0.5),
-                inset 0 0 20px rgba(0,255,85,0.4);
-        }
-
-        .on svg {
-            stroke: #00ff55;
-        }
-
-        .status {
-            margin-top: 30px;
-            font-size: 22px;
+        header {
+            padding: 20px;
+            font-size: 32px;
             font-weight: bold;
+            letter-spacing: 2px;
+            background-color: rgba(255, 255, 255, 0.08);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .container {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            padding: 20px;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .control-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.4);
+            backdrop-filter: blur(6px);
+        }
+
+        .control-card h2 {
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+
+        button {
+            padding: 14px 28px;
+            font-size: 18px;
+            border-radius: 30px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(135deg, #0066ff, #00c3ff);
+            transition: transform 0.2s, background 0.3s;
+            margin-bottom: 12px;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #0052cc, #00a8d1);
+        }
+
+        button:active {
+            transform: scale(0.95);
         }
     </style>
+</head>
+<body>
+
+    <header>
+        M.K IOT HUB
+    </header>
+
+    <div class="container">
+
+        <!-- LED 1 -->
+        <div class="control-card">
+            <h2>LED 1</h2>
+            <button onclick="toggleLED('led1')">Toggle LED 1</button>
+        </div>
+
+        <!-- LED 2 -->
+        <div class="control-card">
+            <h2>LED 2</h2>
+            <button onclick="toggleLED('led2')">Toggle LED 2</button>
+        </div>
+
+        <!-- LED 3 -->
+        <div class="control-card">
+            <h2>LED 3</h2>
+            <button onclick="toggleLED('led3')">Toggle LED 3</button>
+        </div>
+
+        <!-- LED 4 -->
+        <div class="control-card">
+            <h2>LED 4</h2>
+            <button onclick="toggleLED('led4')">Toggle LED 4</button>
+        </div>
+
+        <!-- SERVO CONTROL -->
+        <div class="control-card">
+            <h2>Servo Control</h2>
+            <button onclick="moveServo('left')">Move Left (0°)</button>
+            <button onclick="moveServo('center')">Center (90°)</button>
+            <button onclick="moveServo('right')">Move Right (180°)</button>
+        </div>
+
+    </div>
 
     <script>
-        async function loadState() {
-            const res = await fetch("/state");
-            const data = await res.json();
-            updateUI(data.status);
-        }
+        async function toggleLED(ledID) {
+            try {
+                const response = await fetch(`/led/${ledID}`);
+                const data = await response.json();
+                const newState = data.state === "on" ? "off" : "on";
 
-        async function toggleLED() {
-            const res = await fetch("/toggle", { method: "POST" });
-            const data = await res.json();
-            updateUI(data.status);
-        }
-
-        function updateUI(status) {
-            const btn = document.getElementById("powerBtn");
-            const stateText = document.getElementById("stateText");
-
-            if (status === "on") {
-                btn.classList.remove("off");
-                btn.classList.add("on");
-                stateText.innerHTML = "LED Status: <span style='color:#00ff55;'>ON</span>";
-            } else {
-                btn.classList.remove("on");
-                btn.classList.add("off");
-                stateText.innerHTML = "LED Status: <span style='color:#ff3b3b;'>OFF</span>";
+                await fetch(`/led/${ledID}/${newState}`);
+                alert(`✔ ${ledID.toUpperCase()} is now ${newState.toUpperCase()}`);
+            }
+            catch (err) {
+                alert("Connection error — server unreachable.");
             }
         }
 
-        window.onload = loadState;
+        async function moveServo(position) {
+            try {
+                const response = await fetch(`/servo/${position}`);
+                const data = await response.json();
+                alert(`✔ Servo moved to: ${data.position.toUpperCase()}`);
+            }
+            catch (err) {
+                alert("Connection error — server unreachable.");
+            }
+        }
     </script>
-</head>
 
-<body>
-    <h1>M.K IOT HUB</h1>
-    <h2>Cloud LED Controller</h2>
-
-    <button id="powerBtn" class="power-btn off" onclick="toggleLED()">
-        <!-- Power Icon -->
-        <svg viewBox="0 0 24 24">
-            <path d="M12 2 L12 12" />  <!-- vertical line -->
-            <path d="M7 7 A5 5 0 1 0 17 7" /> <!-- arc -->
-        </svg>
-    </button>
-
-    <div class="status" id="stateText">Checking LED state...</div>
 </body>
 </html>
