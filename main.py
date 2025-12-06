@@ -29,8 +29,8 @@ def set_led_state(led_id: str, state: str):
     leds[led_id] = state
     return {"id": led_id, "state": state}
 
-# Servo control
-servo_position = {"position":"center"}  # default center
+# Servo control state
+servo_position = {"position":"center"}
 
 @app.get("/servo/{pos}")
 def move_servo(pos: str):
@@ -38,3 +38,14 @@ def move_servo(pos: str):
         return {"error":"Invalid servo position"}
     servo_position["position"] = pos
     return servo_position
+
+# NEW ENDPOINT: REQUIRED BY ESP32
+@app.get("/state_all")
+def get_all_states():
+    return {
+        "led1": leds["led1"],
+        "led2": leds["led2"],
+        "led3": leds["led3"],
+        "led4": leds["led4"],
+        "servo": servo_position["position"]
+    }
