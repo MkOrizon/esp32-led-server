@@ -110,7 +110,6 @@
         button:active {
             transform: scale(0.95);
         }
-
     </style>
 </head>
 <body>
@@ -149,6 +148,15 @@
         </label>
     </div>
 
+    <!-- Relay (NEW) -->
+    <div class="control-card">
+        <h2>Relay</h2>
+        <label class="switch">
+            <input type="checkbox" id="relay" onchange="toggleRelay()">
+            <span class="slider round"></span>
+        </label>
+    </div>
+
     <!-- Servo -->
     <div class="control-card">
         <h2>Servo Control</h2>
@@ -175,23 +183,37 @@ async function loadStates() {
             document.getElementById(id).checked = (data[id] === "on");
         }
 
+        // Update relay switch
+        document.getElementById("relay").checked = (data["relay"] === "on");
+
     } catch (err) {
         console.error("Failed to load states:", err);
     }
 }
 
 // -------------------------------
-// Toggle LED
+// Toggle LEDs
 // -------------------------------
 async function toggleLEDSwitch(ledID) {
     try {
         const checkbox = document.getElementById(ledID);
         const newState = checkbox.checked ? "on" : "off";
-
         await fetch(`/led/${ledID}/${newState}`);
     } catch (err) {
         alert("Connection error — server unreachable.");
-        checkbox.checked = !checkbox.checked; // revert
+    }
+}
+
+// -------------------------------
+// Toggle Relay
+// -------------------------------
+async function toggleRelay() {
+    try {
+        const relayBox = document.getElementById("relay");
+        const state = relayBox.checked ? "on" : "off";
+        await fetch(`/relay/${state}`);
+    } catch (err) {
+        alert("Connection error — server unreachable.");
     }
 }
 
