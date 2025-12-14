@@ -1,191 +1,228 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>M.K IOT HUB</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M.K IOT HUB - Control Panel</title>
 
-<style>
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    color: white;
-    text-align: center;
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-image: url("/static/robot_bg.jpg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: white;
+            text-align: center;
+        }
 
-    background:
-        linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
-        url("/static/background.jpg");
+        /* Dark overlay for readability */
+        .page-overlay {
+            min-height: 100vh;
+            background: rgba(10, 15, 36, 0.75);
+        }
 
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
+        header {
+            padding: 20px;
+            font-size: 32px;
+            font-weight: bold;
+            background-color: rgba(255,255,255,0.08);
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+        }
 
-header {
-    padding: 20px;
-    font-size: 32px;
-    font-weight: bold;
-    background: rgba(0,0,0,0.4);
-    backdrop-filter: blur(6px);
-}
+        .container {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            padding: 20px;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
 
-.container {
-    margin-top: 40px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 25px;
-    padding: 20px;
-    max-width: 1000px;
-    margin-left: auto;
-    margin-right: auto;
-}
+        .control-card {
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.4);
+            backdrop-filter: blur(6px);
+        }
 
-.control-card {
-    background: rgba(255,255,255,0.12);
-    padding: 30px;
-    border-radius: 16px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-    backdrop-filter: blur(10px);
-}
+        .control-card h2 {
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
 
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 60px;
-    height: 34px;
-}
+        /* Toggle switch styling */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
 
-.switch input {
-    opacity: 0;
-}
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
 
-.slider {
-    position: absolute;
-    cursor: pointer;
-    inset: 0;
-    background-color: #ccc;
-    border-radius: 34px;
-    transition: .4s;
-}
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0;
+            right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
 
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 26px;
-    width: 26px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    border-radius: 50%;
-    transition: .4s;
-}
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px; width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
 
-input:checked + .slider {
-    background-color: #2196F3;
-}
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
 
-input:checked + .slider:before {
-    transform: translateX(26px);
-}
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
 
-button {
-    width: 100%;
-    padding: 14px;
-    font-size: 16px;
-    border-radius: 30px;
-    border: none;
-    cursor: pointer;
-    color: white;
-    background: linear-gradient(135deg, #0066ff, #00c3ff);
-    margin-bottom: 12px;
-}
-</style>
+        button {
+            padding: 14px 28px;
+            font-size: 18px;
+            border-radius: 30px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(135deg, #0066ff, #00c3ff);
+            transition: transform 0.2s, background 0.3s;
+            margin-bottom: 12px;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #0052cc, #00a8d1);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+    </style>
 </head>
 
 <body>
+<div class="page-overlay">
 
 <header>M.K IOT HUB</header>
 
 <div class="container">
 
-<div class="control-card">
-<h2>LED 1</h2>
-<label class="switch">
-<input type="checkbox" id="led1" onchange="toggleLED('led1')">
-<span class="slider"></span>
-</label>
-</div>
+    <!-- LEDs -->
+    <div class="control-card">
+        <h2>LED 1</h2>
+        <label class="switch">
+            <input type="checkbox" id="led1" onchange="toggleLEDSwitch('led1')">
+            <span class="slider"></span>
+        </label>
+    </div>
 
-<div class="control-card">
-<h2>LED 2</h2>
-<label class="switch">
-<input type="checkbox" id="led2" onchange="toggleLED('led2')">
-<span class="slider"></span>
-</label>
-</div>
+    <div class="control-card">
+        <h2>LED 2</h2>
+        <label class="switch">
+            <input type="checkbox" id="led2" onchange="toggleLEDSwitch('led2')">
+            <span class="slider"></span>
+        </label>
+    </div>
 
-<div class="control-card">
-<h2>LED 3</h2>
-<label class="switch">
-<input type="checkbox" id="led3" onchange="toggleLED('led3')">
-<span class="slider"></span>
-</label>
-</div>
+    <div class="control-card">
+        <h2>LED 3</h2>
+        <label class="switch">
+            <input type="checkbox" id="led3" onchange="toggleLEDSwitch('led3')">
+            <span class="slider"></span>
+        </label>
+    </div>
 
-<div class="control-card">
-<h2>LED 4</h2>
-<label class="switch">
-<input type="checkbox" id="led4" onchange="toggleLED('led4')">
-<span class="slider"></span>
-</label>
-</div>
+    <div class="control-card">
+        <h2>LED 4</h2>
+        <label class="switch">
+            <input type="checkbox" id="led4" onchange="toggleLEDSwitch('led4')">
+            <span class="slider"></span>
+        </label>
+    </div>
 
-<div class="control-card">
-<h2>Relay</h2>
-<label class="switch">
-<input type="checkbox" id="relay" onchange="toggleRelay()">
-<span class="slider"></span>
-</label>
-</div>
+    <!-- Relay -->
+    <div class="control-card">
+        <h2>Relay</h2>
+        <label class="switch">
+            <input type="checkbox" id="relay" onchange="toggleRelay()">
+            <span class="slider"></span>
+        </label>
+    </div>
 
-<div class="control-card">
-<h2>Servo</h2>
-<button onclick="moveServo('left')">Left (0°)</button>
-<button onclick="moveServo('center')">Center (90°)</button>
-<button onclick="moveServo('right')">Right (180°)</button>
-</div>
+    <!-- Servo -->
+    <div class="control-card">
+        <h2>Servo Control</h2>
+        <button onclick="moveServo('left')">Move Left (0°)</button>
+        <button onclick="moveServo('center')">Center (90°)</button>
+        <button onclick="moveServo('right')">Move Right (180°)</button>
+    </div>
 
 </div>
 
 <script>
 async function loadStates() {
-    const res = await fetch("/state_all");
-    const data = await res.json();
+    try {
+        const res = await fetch("/state_all");
+        const data = await res.json();
 
-    for (let i = 1; i <= 4; i++) {
-        document.getElementById("led" + i).checked = data["led" + i] === "on";
+        for (let i = 1; i <= 4; i++) {
+            const id = "led" + i;
+            document.getElementById(id).checked = (data[id] === "on");
+        }
+
+        if (data.relay !== undefined) {
+            document.getElementById("relay").checked = (data.relay === "on");
+        }
+    } catch (err) {
+        console.error("Failed to load states:", err);
     }
-
-    document.getElementById("relay").checked = data.relay === "on";
 }
 
-async function toggleLED(id) {
-    const state = document.getElementById(id).checked ? "on" : "off";
-    await fetch(`/led/${id}/${state}`);
+async function toggleLEDSwitch(ledID) {
+    const checkbox = document.getElementById(ledID);
+    const newState = checkbox.checked ? "on" : "off";
+    await fetch(/led/${ledID}/${newState});
 }
 
 async function toggleRelay() {
-    const state = document.getElementById("relay").checked ? "on" : "off";
-    await fetch(`/relay/${state}`);
+    const relayBox = document.getElementById("relay");
+    const state = relayBox.checked ? "on" : "off";
+    await fetch(/relay/${state});
 }
 
-async function moveServo(pos) {
-    await fetch(`/servo/${pos}`);
-    alert(`Servo moved to ${pos.toUpperCase()}`);
+async function moveServo(position) {
+    const res = await fetch(/servo/${position});
+    const data = await res.json();
+    alert(✔ Servo moved to: ${data.position.toUpperCase()});
 }
 
 loadStates();
 </script>
 
+</div>
 </body>
 </html>
