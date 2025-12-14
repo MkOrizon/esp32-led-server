@@ -9,25 +9,19 @@
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-
-            /* Background image */
             background-image: url("/static/robot_bg.jpg");
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
-
-            /* Image enhancement */
-            filter: brightness(1.15) contrast(1.1);
-
             color: white;
             text-align: center;
         }
 
-        /* Balanced overlay (brighter than before) */
+        /* Dark overlay for readability */
         .page-overlay {
             min-height: 100vh;
-            background: rgba(0, 0, 0, 0.45);
+            background: rgba(10, 15, 36, 0.75);
         }
 
         header {
@@ -50,7 +44,7 @@
         }
 
         .control-card {
-            background: rgba(255,255,255,0.14);
+            background: rgba(255,255,255,0.1);
             padding: 30px;
             border-radius: 14px;
             box-shadow: 0 0 10px rgba(0,0,0,0.4);
@@ -182,4 +176,53 @@
     <!-- Servo -->
     <div class="control-card">
         <h2>Servo Control</h2>
-        <button onclick="
+        <button onclick="moveServo('left')">Move Left (0°)</button>
+        <button onclick="moveServo('center')">Center (90°)</button>
+        <button onclick="moveServo('right')">Move Right (180°)</button>
+    </div>
+
+</div>
+
+<script>
+async function loadStates() {
+    try {
+        const res = await fetch("/state_all");
+        const data = await res.json();
+
+        for (let i = 1; i <= 4; i++) {
+            const id = "led" + i;
+            document.getElementById(id).checked = (data[id] === "on");
+        }
+
+        if (data.relay !== undefined) {
+            document.getElementById("relay").checked = (data.relay === "on");
+        }
+    } catch (err) {
+        console.error("Failed to load states:", err);
+    }
+}
+
+async function toggleLEDSwitch(ledID) {
+    const checkbox = document.getElementById(ledID);
+    const newState = checkbox.checked ? "on" : "off";
+    await fetch(/led/${ledID}/${newState});
+}
+
+async function toggleRelay() {
+    const relayBox = document.getElementById("relay");
+    const state = relayBox.checked ? "on" : "off";
+    await fetch(/relay/${state});
+}
+
+async function moveServo(position) {
+    const res = await fetch(/servo/${position});
+    const data = await res.json();
+    alert(✔ Servo moved to: ${data.position.toUpperCase()});
+}
+
+loadStates();
+</script>
+
+</div>
+</body>
+</html>
