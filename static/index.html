@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>M.K IOT HUB - Control Panel</title>
+<title>M.K IOT HUB</title>
 
 <style>
 body {
@@ -12,28 +12,21 @@ body {
     color: white;
     text-align: center;
 
-    /* 🔵 BACKGROUND IMAGE */
-    background-image: url("/static/background.jpg");
+    background:
+        linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
+        url("/static/background.jpg");
+
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-}
-
-/* Dark overlay for contrast */
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.35);
-    z-index: -1;
 }
 
 header {
     padding: 20px;
     font-size: 32px;
     font-weight: bold;
-    background-color: rgba(255,255,255,0.08);
-    border-bottom: 2px solid rgba(255,255,255,0.1);
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(6px);
 }
 
 .container {
@@ -50,17 +43,11 @@ header {
 .control-card {
     background: rgba(255,255,255,0.12);
     padding: 30px;
-    border-radius: 14px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.6);
-    backdrop-filter: blur(6px);
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    backdrop-filter: blur(10px);
 }
 
-.control-card h2 {
-    font-size: 22px;
-    margin-bottom: 15px;
-}
-
-/* Toggle switch */
 .switch {
     position: relative;
     display: inline-block;
@@ -76,21 +63,21 @@ header {
     position: absolute;
     cursor: pointer;
     inset: 0;
-    background-color: #777;
-    transition: .4s;
+    background-color: #ccc;
     border-radius: 34px;
+    transition: .4s;
 }
 
 .slider:before {
-    content: "";
     position: absolute;
+    content: "";
     height: 26px;
     width: 26px;
     left: 4px;
     bottom: 4px;
     background-color: white;
-    transition: .4s;
     border-radius: 50%;
+    transition: .4s;
 }
 
 input:checked + .slider {
@@ -102,16 +89,15 @@ input:checked + .slider:before {
 }
 
 button {
+    width: 100%;
     padding: 14px;
     font-size: 16px;
-    border-radius: 25px;
+    border-radius: 30px;
     border: none;
     cursor: pointer;
-    width: 100%;
-    font-weight: bold;
     color: white;
     background: linear-gradient(135deg, #0066ff, #00c3ff);
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 </style>
 </head>
@@ -122,40 +108,56 @@ button {
 
 <div class="container">
 
-<!-- LEDs -->
-<div class="control-card"><h2>LED 1</h2>
-<label class="switch"><input type="checkbox" id="led1" onchange="toggleLED('led1')"><span class="slider"></span></label>
+<div class="control-card">
+<h2>LED 1</h2>
+<label class="switch">
+<input type="checkbox" id="led1" onchange="toggleLED('led1')">
+<span class="slider"></span>
+</label>
 </div>
 
-<div class="control-card"><h2>LED 2</h2>
-<label class="switch"><input type="checkbox" id="led2" onchange="toggleLED('led2')"><span class="slider"></span></label>
+<div class="control-card">
+<h2>LED 2</h2>
+<label class="switch">
+<input type="checkbox" id="led2" onchange="toggleLED('led2')">
+<span class="slider"></span>
+</label>
 </div>
 
-<div class="control-card"><h2>LED 3</h2>
-<label class="switch"><input type="checkbox" id="led3" onchange="toggleLED('led3')"><span class="slider"></span></label>
+<div class="control-card">
+<h2>LED 3</h2>
+<label class="switch">
+<input type="checkbox" id="led3" onchange="toggleLED('led3')">
+<span class="slider"></span>
+</label>
 </div>
 
-<div class="control-card"><h2>LED 4</h2>
-<label class="switch"><input type="checkbox" id="led4" onchange="toggleLED('led4')"><span class="slider"></span></label>
+<div class="control-card">
+<h2>LED 4</h2>
+<label class="switch">
+<input type="checkbox" id="led4" onchange="toggleLED('led4')">
+<span class="slider"></span>
+</label>
 </div>
 
-<!-- Relay -->
-<div class="control-card"><h2>Relay</h2>
-<label class="switch"><input type="checkbox" id="relay" onchange="toggleRelay()"><span class="slider"></span></label>
+<div class="control-card">
+<h2>Relay</h2>
+<label class="switch">
+<input type="checkbox" id="relay" onchange="toggleRelay()">
+<span class="slider"></span>
+</label>
 </div>
 
-<!-- Servo -->
 <div class="control-card">
 <h2>Servo</h2>
-<button onclick="moveServo('left')">Left</button>
-<button onclick="moveServo('center')">Center</button>
-<button onclick="moveServo('right')">Right</button>
+<button onclick="moveServo('left')">Left (0°)</button>
+<button onclick="moveServo('center')">Center (90°)</button>
+<button onclick="moveServo('right')">Right (180°)</button>
 </div>
 
 </div>
 
 <script>
-// Load states
 async function loadStates() {
     const res = await fetch("/state_all");
     const data = await res.json();
@@ -163,24 +165,23 @@ async function loadStates() {
     for (let i = 1; i <= 4; i++) {
         document.getElementById("led" + i).checked = data["led" + i] === "on";
     }
+
     document.getElementById("relay").checked = data.relay === "on";
 }
 
-// LED toggle
 async function toggleLED(id) {
     const state = document.getElementById(id).checked ? "on" : "off";
     await fetch(`/led/${id}/${state}`);
 }
 
-// Relay toggle
 async function toggleRelay() {
     const state = document.getElementById("relay").checked ? "on" : "off";
     await fetch(`/relay/${state}`);
 }
 
-// Servo control
 async function moveServo(pos) {
     await fetch(`/servo/${pos}`);
+    alert(`Servo moved to ${pos.toUpperCase()}`);
 }
 
 loadStates();
