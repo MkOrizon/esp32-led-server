@@ -4,24 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>M.K IOT HUB - Control Panel</title>
-
     <style>
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background-image: url("/static/robot_bg.jpg");
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
+            background: linear-gradient(135deg, #0a0f24, #1a2b4c, #0a0f24);
             color: white;
             text-align: center;
-        }
-
-        /* Dark overlay for readability */
-        .page-overlay {
-            min-height: 100vh;
-            background: rgba(10, 15, 36, 0.75);
         }
 
         header {
@@ -123,9 +112,7 @@
         }
     </style>
 </head>
-
 <body>
-<div class="page-overlay">
 
 <header>M.K IOT HUB</header>
 
@@ -136,40 +123,37 @@
         <h2>LED 1</h2>
         <label class="switch">
             <input type="checkbox" id="led1" onchange="toggleLEDSwitch('led1')">
-            <span class="slider"></span>
+            <span class="slider round"></span>
         </label>
     </div>
-
     <div class="control-card">
         <h2>LED 2</h2>
         <label class="switch">
             <input type="checkbox" id="led2" onchange="toggleLEDSwitch('led2')">
-            <span class="slider"></span>
+            <span class="slider round"></span>
         </label>
     </div>
-
     <div class="control-card">
         <h2>LED 3</h2>
         <label class="switch">
             <input type="checkbox" id="led3" onchange="toggleLEDSwitch('led3')">
-            <span class="slider"></span>
+            <span class="slider round"></span>
         </label>
     </div>
-
     <div class="control-card">
         <h2>LED 4</h2>
         <label class="switch">
             <input type="checkbox" id="led4" onchange="toggleLEDSwitch('led4')">
-            <span class="slider"></span>
+            <span class="slider round"></span>
         </label>
     </div>
 
-    <!-- Relay -->
+    <!-- Relay (NEW) -->
     <div class="control-card">
         <h2>Relay</h2>
         <label class="switch">
             <input type="checkbox" id="relay" onchange="toggleRelay()">
-            <span class="slider"></span>
+            <span class="slider round"></span>
         </label>
     </div>
 
@@ -184,45 +168,72 @@
 </div>
 
 <script>
+
+// -------------------------------
+// Load states on page load
+// -------------------------------
 async function loadStates() {
     try {
         const res = await fetch("/state_all");
         const data = await res.json();
 
+        // Update LED switches
         for (let i = 1; i <= 4; i++) {
-            const id = "led" + i;
+            let id = "led" + i;
             document.getElementById(id).checked = (data[id] === "on");
         }
 
-        if (data.relay !== undefined) {
-            document.getElementById("relay").checked = (data.relay === "on");
-        }
+        // Update relay switch
+        document.getElementById("relay").checked = (data["relay"] === "on");
+
     } catch (err) {
         console.error("Failed to load states:", err);
     }
 }
 
+// -------------------------------
+// Toggle LEDs
+// -------------------------------
 async function toggleLEDSwitch(ledID) {
-    const checkbox = document.getElementById(ledID);
-    const newState = checkbox.checked ? "on" : "off";
-    await fetch(/led/${ledID}/${newState});
+    try {
+        const checkbox = document.getElementById(ledID);
+        const newState = checkbox.checked ? "on" : "off";
+        await fetch(/led/${ledID}/${newState});
+    } catch (err) {
+        alert("Connection error — server unreachable.");
+    }
 }
 
+// -------------------------------
+// Toggle Relay
+// -------------------------------
 async function toggleRelay() {
-    const relayBox = document.getElementById("relay");
-    const state = relayBox.checked ? "on" : "off";
-    await fetch(/relay/${state});
+    try {
+        const relayBox = document.getElementById("relay");
+        const state = relayBox.checked ? "on" : "off";
+        await fetch(/relay/${state});
+    } catch (err) {
+        alert("Connection error — server unreachable.");
+    }
 }
 
+// -------------------------------
+// Servo movement
+// -------------------------------
 async function moveServo(position) {
-    const res = await fetch(/servo/${position});
-    const data = await res.json();
-    alert(✔ Servo moved to: ${data.position.toUpperCase()});
+    try {
+        const res = await fetch(/servo/${position});
+        const data = await res.json();
+        alert(✔ Servo moved to: ${data.position.toUpperCase()});
+    } catch (err) {
+        alert("Connection error — server unreachable.");
+    }
 }
 
+// Load states immediately
 loadStates();
+
 </script>
 
-</div>
 </body>
 </html>
