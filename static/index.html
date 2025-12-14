@@ -6,19 +6,17 @@
 <title>M.K IOT HUB - Control Panel</title>
 
 <style>
-/* ---------------- GLOBAL ---------------- */
 body {
     margin: 0;
     font-family: Arial, sans-serif;
     color: white;
     text-align: center;
 
-    /* Background image */
-    background-image: url("/static/bg.jpg");
+    /* 🔵 BACKGROUND IMAGE */
+    background-image: url("/static/background.jpg");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    background-attachment: fixed;
 }
 
 /* Dark overlay for contrast */
@@ -26,21 +24,18 @@ body::before {
     content: "";
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.45);
+    background: rgba(0, 0, 0, 0.35);
     z-index: -1;
 }
 
-/* ---------------- HEADER ---------------- */
 header {
     padding: 20px;
     font-size: 32px;
     font-weight: bold;
     background-color: rgba(255,255,255,0.08);
     border-bottom: 2px solid rgba(255,255,255,0.1);
-    backdrop-filter: blur(6px);
 }
 
-/* ---------------- LAYOUT ---------------- */
 .container {
     margin-top: 40px;
     display: grid;
@@ -52,13 +47,12 @@ header {
     margin-right: auto;
 }
 
-/* ---------------- CARDS ---------------- */
 .control-card {
     background: rgba(255,255,255,0.12);
     padding: 30px;
-    border-radius: 16px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.5);
-    backdrop-filter: blur(10px);
+    border-radius: 14px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.6);
+    backdrop-filter: blur(6px);
 }
 
 .control-card h2 {
@@ -66,7 +60,7 @@ header {
     margin-bottom: 15px;
 }
 
-/* ---------------- SWITCH ---------------- */
+/* Toggle switch */
 .switch {
     position: relative;
     display: inline-block;
@@ -76,22 +70,20 @@ header {
 
 .switch input {
     opacity: 0;
-    width: 0;
-    height: 0;
 }
 
 .slider {
     position: absolute;
     cursor: pointer;
     inset: 0;
-    background-color: #555;
+    background-color: #777;
     transition: .4s;
     border-radius: 34px;
 }
 
 .slider:before {
-    position: absolute;
     content: "";
+    position: absolute;
     height: 26px;
     width: 26px;
     left: 4px;
@@ -102,20 +94,97 @@ header {
 }
 
 input:checked + .slider {
-    background-color: #00b3ff;
+    background-color: #2196F3;
 }
 
 input:checked + .slider:before {
     transform: translateX(26px);
 }
 
-/* ---------------- BUTTONS ---------------- */
 button {
-    padding: 14px 28px;
-    font-size: 18px;
-    border-radius: 30px;
+    padding: 14px;
+    font-size: 16px;
+    border-radius: 25px;
     border: none;
     cursor: pointer;
     width: 100%;
     font-weight: bold;
     color: white;
+    background: linear-gradient(135deg, #0066ff, #00c3ff);
+    margin-bottom: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<header>M.K IOT HUB</header>
+
+<div class="container">
+
+<!-- LEDs -->
+<div class="control-card"><h2>LED 1</h2>
+<label class="switch"><input type="checkbox" id="led1" onchange="toggleLED('led1')"><span class="slider"></span></label>
+</div>
+
+<div class="control-card"><h2>LED 2</h2>
+<label class="switch"><input type="checkbox" id="led2" onchange="toggleLED('led2')"><span class="slider"></span></label>
+</div>
+
+<div class="control-card"><h2>LED 3</h2>
+<label class="switch"><input type="checkbox" id="led3" onchange="toggleLED('led3')"><span class="slider"></span></label>
+</div>
+
+<div class="control-card"><h2>LED 4</h2>
+<label class="switch"><input type="checkbox" id="led4" onchange="toggleLED('led4')"><span class="slider"></span></label>
+</div>
+
+<!-- Relay -->
+<div class="control-card"><h2>Relay</h2>
+<label class="switch"><input type="checkbox" id="relay" onchange="toggleRelay()"><span class="slider"></span></label>
+</div>
+
+<!-- Servo -->
+<div class="control-card">
+<h2>Servo</h2>
+<button onclick="moveServo('left')">Left</button>
+<button onclick="moveServo('center')">Center</button>
+<button onclick="moveServo('right')">Right</button>
+</div>
+
+</div>
+
+<script>
+// Load states
+async function loadStates() {
+    const res = await fetch("/state_all");
+    const data = await res.json();
+
+    for (let i = 1; i <= 4; i++) {
+        document.getElementById("led" + i).checked = data["led" + i] === "on";
+    }
+    document.getElementById("relay").checked = data.relay === "on";
+}
+
+// LED toggle
+async function toggleLED(id) {
+    const state = document.getElementById(id).checked ? "on" : "off";
+    await fetch(`/led/${id}/${state}`);
+}
+
+// Relay toggle
+async function toggleRelay() {
+    const state = document.getElementById("relay").checked ? "on" : "off";
+    await fetch(`/relay/${state}`);
+}
+
+// Servo control
+async function moveServo(pos) {
+    await fetch(`/servo/${pos}`);
+}
+
+loadStates();
+</script>
+
+</body>
+</html>
