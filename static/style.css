@@ -109,8 +109,13 @@ header {
     border-radius: 50%;
 }
 
+/* NEON GLOW WHEN SWITCH IS ON */
 input:checked + .slider {
-    background-color: #2196F3;
+    background-color: #00e5ff;
+    box-shadow:
+        0 0 8px #00e5ff,
+        0 0 16px #00e5ff,
+        0 0 32px rgba(0, 229, 255, 0.8);
 }
 
 input:checked + .slider:before {
