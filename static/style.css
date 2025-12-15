@@ -121,17 +121,9 @@ input:checked + .slider:before {
    BUTTONS
 ================================ */
 button {
-    padding: 10px 16px;      /* reduced padding */
-    font-size: 15px;         /* smaller text */
-    border-radius: 18px;     /* less rounded */
-    border: none;
-    cursor: pointer;
-    width: 100%;
-    font-weight: 600;
-    color: white;
-    background: linear-gradient(135deg, #0066ff, #00c3ff);
-    transition: transform 0.2s, background 0.3s;
-    margin-bottom: 10px;
+    padding: 8px 14px;
+    font-size: 14px;
+    border-radius: 14px;
 }
 
 button:hover {
