@@ -1,5 +1,5 @@
 /* ===============================
-   GLOBAL
+   GLOBAL RESET
 ================================ */
 * {
     margin: 0;
@@ -7,10 +7,12 @@
     box-sizing: border-box;
 }
 
+/* ===============================
+   BODY & BACKGROUND
+================================ */
 body {
     font-family: Arial, sans-serif;
     text-align: center;
-    color: white;
 
     /* IMAGE BACKGROUND */
     background-image: url("/static/background.jpg");
@@ -20,6 +22,9 @@ body {
     background-attachment: fixed;
 
     min-height: 100vh;
+
+    /* DEFAULT TEXT (soft gold) */
+    color: #f5e6b8;
 }
 
 /* DARK OVERLAY */
@@ -40,6 +45,12 @@ header {
     font-weight: bold;
     background-color: rgba(255,255,255,0.08);
     border-bottom: 2px solid rgba(255,255,255,0.1);
+
+    /* 22K GOLD */
+    color: #d4af37;
+    text-shadow:
+        0 0 6px rgba(212, 175, 55, 0.6),
+        0 0 12px rgba(212, 175, 55, 0.3);
 }
 
 /* ===============================
@@ -67,9 +78,12 @@ header {
     backdrop-filter: blur(8px);
 }
 
+/* CARD TITLES – GOLD */
 .control-card h2 {
     font-size: 22px;
     margin-bottom: 15px;
+    color: #d4af37;
+    text-shadow: 0 0 6px rgba(212, 175, 55, 0.5);
 }
 
 /* ===============================
@@ -92,7 +106,7 @@ header {
     position: absolute;
     cursor: pointer;
     inset: 0;
-    background-color: #ccc;
+    background-color: #888;
     transition: .4s;
     border-radius: 34px;
 }
@@ -104,12 +118,12 @@ header {
     width: 26px;
     left: 4px;
     bottom: 4px;
-    background-color: white;
+    background-color: #ffffff;
     transition: .4s;
     border-radius: 50%;
 }
 
-/* NEON GLOW WHEN SWITCH IS ON */
+/* NEON GLOW WHEN ON */
 input:checked + .slider {
     background-color: #00e5ff;
     box-shadow:
@@ -120,20 +134,33 @@ input:checked + .slider {
 
 input:checked + .slider:before {
     transform: translateX(26px);
+    box-shadow:
+        0 0 6px #ffffff,
+        0 0 12px #00e5ff;
 }
 
 /* ===============================
-   BUTTONS
+   BUTTONS (REDUCED SIZE + GOLD TEXT)
 ================================ */
 button {
     padding: 8px 14px;
     font-size: 14px;
     border-radius: 14px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    font-weight: bold;
+
+    /* GOLD TEXT */
+    color: #d4af37;
+
+    background: linear-gradient(135deg, #003b8e, #0077c8);
+    transition: transform 0.2s, box-shadow 0.3s;
 }
 
 button:hover {
     transform: scale(1.05);
-    background: linear-gradient(135deg, #0052cc, #00a8d1);
+    box-shadow: 0 0 12px rgba(212, 175, 55, 0.6);
 }
 
 button:active {

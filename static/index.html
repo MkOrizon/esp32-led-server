@@ -3,18 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M.K TECh - Control Panel</title>
+    <title>M.K TECH - Control Panel</title>
 
-    <!-- EXTERNAL CSS -->
-    <link rel="stylesheet" href="/static/style.css">
+    <!-- INLINE CSS (FORCED – WILL WORK) -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            min-height: 100vh;
+
+            /* BACKGROUND IMAGE */
+            background-image: url("/static/background.jpg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+
+            /* GOLD TEXT */
+            color: #f5e6b8;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.65);
+            z-index: -1;
+        }
+
+        header {
+            padding: 20px;
+            font-size: 32px;
+            font-weight: bold;
+            color: #d4af37;
+            background: rgba(255,255,255,0.08);
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+            text-shadow: 0 0 10px rgba(212,175,55,0.6);
+        }
+
+        .container {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            padding: 20px;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .control-card {
+            background: rgba(255,255,255,0.12);
+            padding: 30px;
+            border-radius: 14px;
+            backdrop-filter: blur(8px);
+        }
+
+        .control-card h2 {
+            color: #d4af37;
+            margin-bottom: 15px;
+            text-shadow: 0 0 6px rgba(212,175,55,0.5);
+        }
+
+        /* SWITCH */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+        }
+
+        .slider {
+            position: absolute;
+            inset: 0;
+            background-color: #777;
+            border-radius: 34px;
+            cursor: pointer;
+            transition: .4s;
+        }
+
+        .slider:before {
+            content: "";
+            position: absolute;
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            border-radius: 50%;
+            transition: .4s;
+        }
+
+        input:checked + .slider {
+            background-color: #00e5ff;
+            box-shadow: 0 0 20px #00e5ff;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        /* BUTTONS */
+        button {
+            padding: 8px 14px;
+            font-size: 14px;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            color: #d4af37;
+            background: linear-gradient(135deg, #003b8e, #0077c8);
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            box-shadow: 0 0 12px rgba(212,175,55,0.6);
+        }
+    </style>
 </head>
+
 <body>
 
 <header>M.K TECH</header>
 
 <div class="container">
 
-    <!-- LED 1 -->
     <div class="control-card">
         <h2>LED 1</h2>
         <label class="switch">
@@ -23,7 +147,6 @@
         </label>
     </div>
 
-    <!-- LED 2 -->
     <div class="control-card">
         <h2>LED 2</h2>
         <label class="switch">
@@ -32,7 +155,6 @@
         </label>
     </div>
 
-    <!-- LED 3 -->
     <div class="control-card">
         <h2>LED 3</h2>
         <label class="switch">
@@ -41,7 +163,6 @@
         </label>
     </div>
 
-    <!-- LED 4 -->
     <div class="control-card">
         <h2>LED 4</h2>
         <label class="switch">
@@ -50,7 +171,6 @@
         </label>
     </div>
 
-    <!-- RELAY -->
     <div class="control-card">
         <h2>Relay</h2>
         <label class="switch">
@@ -59,7 +179,6 @@
         </label>
     </div>
 
-    <!-- SERVO -->
     <div class="control-card">
         <h2>Servo Control</h2>
         <button onclick="moveServo('left')">Move Left (0°)</button>
@@ -70,68 +189,29 @@
 </div>
 
 <script>
-/* ================================
-   LOAD STATES ON PAGE LOAD
-================================ */
 async function loadStates() {
-    try {
-        const res = await fetch("/state_all");
-        const data = await res.json();
-
-        // LEDs
-        for (let i = 1; i <= 4; i++) {
-            const id = "led" + i;
-            document.getElementById(id).checked = (data[id] === "on");
-        }
-
-        // Relay
-        document.getElementById("relay").checked = (data["relay"] === "on");
-
-    } catch (err) {
-        console.error("Failed to load states:", err);
+    const res = await fetch("/state_all");
+    const data = await res.json();
+    for (let i = 1; i <= 4; i++) {
+        document.getElementById("led" + i).checked = data["led" + i] === "on";
     }
+    document.getElementById("relay").checked = data["relay"] === "on";
 }
 
-/* ================================
-   TOGGLE LED
-================================ */
-async function toggleLEDSwitch(ledID) {
-    try {
-        const checkbox = document.getElementById(ledID);
-        const state = checkbox.checked ? "on" : "off";
-        await fetch(`/led/${ledID}/${state}`);
-    } catch (err) {
-        alert("Connection error — server unreachable.");
-    }
+async function toggleLEDSwitch(id) {
+    const state = document.getElementById(id).checked ? "on" : "off";
+    await fetch(`/led/${id}/${state}`);
 }
 
-/* ================================
-   TOGGLE RELAY
-================================ */
 async function toggleRelay() {
-    try {
-        const relayBox = document.getElementById("relay");
-        const state = relayBox.checked ? "on" : "off";
-        await fetch(`/relay/${state}`);
-    } catch (err) {
-        alert("Connection error — server unreachable.");
-    }
+    const state = document.getElementById("relay").checked ? "on" : "off";
+    await fetch(`/relay/${state}`);
 }
 
-/* ================================
-   SERVO CONTROL
-================================ */
-async function moveServo(position) {
-    try {
-        const res = await fetch(`/servo/${position}`);
-        const data = await res.json();
-        alert(`✔ Servo moved to: ${data.position.toUpperCase()}`);
-    } catch (err) {
-        alert("Connection error — server unreachable.");
-    }
+async function moveServo(pos) {
+    await fetch(`/servo/${pos}`);
 }
 
-// INITIAL LOAD
 loadStates();
 </script>
 
